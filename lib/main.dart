@@ -65,7 +65,7 @@ class _HomeScreenState extends State<HomeScreen> {
               itemCount: icons.length,
               padding: EdgeInsets.symmetric(horizontal: 1.5),
               itemBuilder: (ctx, i) => Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 15),
+                padding: const EdgeInsets.symmetric(horizontal: 12),
                 child: GestureDetector(
                   onTap: () {
                     setState(() {
@@ -74,14 +74,9 @@ class _HomeScreenState extends State<HomeScreen> {
                   },
                   child: AnimatedContainer(
                     duration: Duration(milliseconds: 250),
-                    width: 35,
+                    width: 40,
                     decoration: BoxDecoration(
-                      border: i == _indiceAtual
-                          ? Border(
-                              top: BorderSide(
-                                  width: 3.0,
-                                  color: Color.fromRGBO(38, 38, 38, 1)))
-                          : null,
+                      shape: BoxShape.circle,
                       color: i == _indiceAtual
                           ? Color.fromRGBO(217, 217, 217, 1)
                           : null,
