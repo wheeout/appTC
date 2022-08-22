@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
+import 'package:material_floating_search_bar/material_floating_search_bar.dart';
 
 class SearchPage extends StatefulWidget {
   // ExamplePage({ Key key }) : super(key: key);
@@ -8,107 +9,67 @@ class SearchPage extends StatefulWidget {
 }
 
 class _SearchPageState extends State<SearchPage> {
-  // final formKey = new GlobalKey<FormState>();
-  // final key = new GlobalKey<ScaffoldState>();
-  final TextEditingController _filter = new TextEditingController();
-  final dio = new Dio();
-  String _searchText = "";
-  List names = [];
-  List filteredNames = [];
-  Icon _searchIcon = new Icon(Icons.search);
-  Widget _appBarTitle = new Text('Search Example');
-
-  _ExamplePageState() {
-    _filter.addListener(() {
-      if (_filter.text.isEmpty) {
-        setState(() {
-          _searchText = "";
-          filteredNames = names;
-        });
-      } else {
-        setState(() {
-          _searchText = _filter.text;
-        });
-      }
-    });
-  }
-
   @override
-  void initState() {
-    this._getNames();
-    super.initState();
-  }
-
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        child: _buildList(),
+      // This is handled by the search bar itself.
+      resizeToAvoidBottomInset: false,
+      body: Stack(
+        fit: StackFit.expand,
+        children: [
+          buildFloatingSearchBar(),
+        ],
       ),
     );
   }
 
-  Widget _buildBar(BuildContext context) {
-    return new AppBar(
-      centerTitle: true,
-      title: _appBarTitle,
-      leading: new IconButton(
-        icon: _searchIcon,
-        onPressed: _searchPressed,
-      ),
-    );
-  }
+  Widget buildFloatingSearchBar() {
+    final isPortrait =
+        MediaQuery.of(context).orientation == Orientation.portrait;
 
-  Widget _buildList() {
-    if (!(_searchText.isEmpty)) {
-      List tempList = [];
-      for (int i = 0; i < filteredNames.length; i++) {
-        if (filteredNames[i]['name']
-            .toLowerCase()
-            .contains(_searchText.toLowerCase())) {
-          tempList.add(filteredNames[i]);
-        }
-      }
-      filteredNames = tempList;
-    }
-    return ListView.builder(
-      itemCount: names == null ? 0 : filteredNames.length,
-      itemBuilder: (BuildContext context, int index) {
-        return new ListTile(
-          title: Text(filteredNames[index]['name']),
-          onTap: () => print(filteredNames[index]['name']),
+    return FloatingSearchBar(
+      hint: 'Pesquisar...',
+      scrollPadding: const EdgeInsets.only(top: 16, bottom: 56),
+      transitionDuration: const Duration(milliseconds: 800),
+      transitionCurve: Curves.easeInOut,
+      physics: const BouncingScrollPhysics(),
+      axisAlignment: isPortrait ? 0.0 : -1.0,
+      openAxisAlignment: 0.0,
+      width: isPortrait ? 600 : 500,
+      debounceDelay: const Duration(milliseconds: 500),
+      onQueryChanged: (query) {
+        // Call your model, bloc, controller here.
+      },
+      // Specify a custom transition to be used for
+      // animating between opened and closed stated.
+      transition: CircularFloatingSearchBarTransition(),
+      actions: [
+        FloatingSearchBarAction(
+          showIfOpened: false,
+          child: CircularButton(
+            icon: const Icon(Icons.place),
+            onPressed: () {},
+          ),
+        ),
+        FloatingSearchBarAction.searchToClear(
+          showIfClosed: false,
+        ),
+      ],
+      builder: (context, transition) {
+        return ClipRRect(
+          borderRadius: BorderRadius.circular(8),
+          child: Material(
+            color: Colors.white,
+            elevation: 4.0,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: Colors.accents.map((color) {
+                return Container(height: 112, color: color);
+              }).toList(),
+            ),
+          ),
         );
       },
     );
-  }
-
-  void _searchPressed() {
-    setState(() {
-      if (this._searchIcon.icon == Icons.search) {
-        this._searchIcon = new Icon(Icons.close);
-        this._appBarTitle = new TextField(
-          controller: _filter,
-          decoration: new InputDecoration(
-              prefixIcon: new Icon(Icons.search), hintText: 'Search...'),
-        );
-      } else {
-        this._searchIcon = new Icon(Icons.search);
-        this._appBarTitle = new Text('Search Example');
-        filteredNames = names;
-        _filter.clear();
-      }
-    });
-  }
-
-  void _getNames() async {
-    final response = await dio.get('https://swapi.co/api/people');
-    List tempList = [];
-    for (int i = 0; i < response.data['results'].length; i++) {
-      tempList.add(response.data['results'][i]);
-    }
-    setState(() {
-      names = tempList;
-      names.shuffle();
-      filteredNames = names;
-    });
   }
 }
