@@ -52,7 +52,8 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       extendBody: true,
-      body: _telas[_indiceAtual],
+      body: 
+      _telas[_indiceAtual],
       bottomNavigationBar: Padding(
         padding: const EdgeInsets.fromLTRB(40, 0, 40, 20),
         child: Material(

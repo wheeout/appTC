@@ -11,6 +11,7 @@ class Home extends StatelessWidget {
         backgroundColor: Color.fromRGBO(38, 38, 38, 1),
         body: ListView(children: [
           Container(
+            margin: EdgeInsets.zero,
             width: double.infinity,
             height: MediaQuery.of(context).size.height * 0.5,
             decoration: BoxDecoration(
